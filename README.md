@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # DEPI-ONL4_AIS2_S2
 
 ## Project Overview
@@ -36,3 +37,6 @@ Used for saving any notes, explanations, or documentation related to ML or Pytho
 
 - **code/**: Code practiced during Session 2.
 - **assignment/**: Contains the assignment for Session 2.
+=======
+# DEPI-ONL4_AIS2_S2
+>>>>>>> e422452e275f48eb26816dd0dd8f10dbdb585d1a
