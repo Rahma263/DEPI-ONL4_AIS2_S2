@@ -43,6 +43,20 @@ README.md
 4. Encoding and Scaling
 5. Exploratory Data Analysis
 
+## Dataset
+
+- **Source**: Ford GoBike System Data – February 2019
+- **Rows**: 183,416 raw → 173,121 after cleaning
+- **Columns**: 16 raw → 31 after feature engineering
+
+## Key Findings
+
+- **Subscribers** make up >80% of all trips
+- **Customers** take significantly longer rides (leisure pattern)
+- Clear **commuter peaks** at 8 AM and 5 PM
+- **25–34** is the most active age group
+- ~80% of trips occur on **weekdays**
+
 ## Technologies Used
 
 - Python
