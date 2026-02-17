@@ -15,10 +15,10 @@ Goal:
 
 ## Project Structure
 
-BikeShare-Analysis/
+Finalproject/
 
 data/
-fordgoBike-tripdata.csv
+fordgobike-tripdataFor201902.csv
 
 notebook/
 analysis.ipynb
