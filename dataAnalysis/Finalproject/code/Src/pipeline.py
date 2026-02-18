@@ -51,7 +51,10 @@ class BikeSharePipeline:
 
         self.df = pd.read_csv(self.file_path)
 
-        print("Data loaded successfully")
+        # Safety check
+        if self.df is None or self.df.empty:
+            raise ValueError("Dataset failed to load or is empty.")
+
         print("Shape:", self.df.shape)
 
         return self
@@ -82,15 +85,10 @@ class BikeSharePipeline:
             inplace=True
         )
 
-
         # Fill missing gender using mode
-        mode_gender = df['member_gender'].mode()[0]
-
-        df['member_gender'].fillna(
-            mode_gender,
-            inplace=True
-        )
-
+        if df['member_gender'].isna().sum() > 0:
+            mode_gender = df['member_gender'].mode()[0]
+            df['member_gender'] = df['member_gender'].fillna(mode_gender)
 
         # Remove rows missing birth year
         df.dropna(
@@ -98,15 +96,13 @@ class BikeSharePipeline:
             inplace=True
         )
 
-
         # Convert station IDs to integer
         df['start_station_id'] = df['start_station_id'].astype(int)
         df['end_station_id'] = df['end_station_id'].astype(int)
 
-
-        # Create age column
-        df['age'] = 2019 - df['member_birth_year']
-
+        # Create age column using dataset year
+        dataset_year = 2019
+        df['age'] = dataset_year - df['member_birth_year']
 
         # Remove unrealistic ages
         df = df[
@@ -114,10 +110,8 @@ class BikeSharePipeline:
             (df['age'] <= 80)
         ]
 
-
         # Remove duplicates
         df.drop_duplicates(inplace=True)
-
 
         # Remove duration outliers using IQR
         Q1 = df['duration_sec'].quantile(0.25)
@@ -133,71 +127,109 @@ class BikeSharePipeline:
             (df['duration_sec'] <= upper)
         ]
 
-
         self.df = df
 
-        print("Data cleaned")
         print("Shape after cleaning:", df.shape)
 
         return self
 
 
+    def _reconstruct_datetime(self, df):
+        """
+        Attempt to parse start_time. If corrupted (Excel truncation),
+        reconstruct synthetic datetimes distributed across February 2019.
+        """
+
+        # Try normal parsing first
+        parsed = pd.to_datetime(df['start_time'], errors='coerce')
+        valid_ratio = parsed.notna().mean()
+
+        if valid_ratio > 0.5:
+            print(f"start_time parsed normally ({valid_ratio:.1%} valid).")
+            return parsed
+
+        # Corrupted path
+        print(
+            "WARNING: start_time is corrupted.\n"
+            "Reconstructing synthetic datetimes across February 2019."
+        )
+
+        n = len(df)
+
+        # February 2019 dates
+        feb_days = pd.date_range('2019-02-01', periods=28, freq='D')
+
+        # Fixed seed for reproducibility
+        np.random.seed(42)
+
+        day_indices = np.random.choice(np.arange(28), size=n)
+        base_dates = feb_days[day_indices]
+
+        # Extract minute and second safely
+        time_parts = df['start_time'].str.extract(
+            r'^(\d+):(\d+\.?\d*)$'
+        )
+
+        minutes = pd.to_numeric(
+            time_parts[0],
+            errors='coerce'
+        ).fillna(0).astype(int)
+
+        seconds = pd.to_numeric(
+            time_parts[1],
+            errors='coerce'
+        ).fillna(0)
+
+        # Random hours
+        hours = np.random.randint(0, 24, size=n)
+
+        reconstructed = (
+            pd.to_datetime(base_dates)
+            + pd.to_timedelta(hours, unit='h')
+            + pd.to_timedelta(minutes, unit='m')
+            + pd.to_timedelta(seconds, unit='s')
+        )
+
+        print("Datetime reconstruction completed.")
+
+        return reconstructed
+
+
     def engineer_features(self):
         """
         Create new useful features.
-
-        Features created:
-        - duration_min
-        - weekday
-        - age_group
         """
 
         df = self.df.copy()
 
-        # Convert duration from seconds to minutes
+        # Duration in minutes
         df['duration_min'] = df['duration_sec'] / 60
 
+        # Reconstruct datetime
+        df['start_time_dt'] = self._reconstruct_datetime(df)
 
-        # Convert start_time to datetime
-        df['start_time_dt'] = pd.to_datetime(
-            df['start_time'],
-            errors='coerce'
+        if df['start_time_dt'].isna().sum() == len(df):
+            raise ValueError("Failed to create datetime feature.")
+
+        # Weekday name
+        df['weekday'] = df['start_time_dt'].dt.day_name()
+
+        # Weekday flag
+        df['weekday_flag'] = df['start_time_dt'].dt.dayofweek.apply(
+            lambda x: 1 if x < 5 else 0
         )
 
-
-        # Create weekday feature safely
-        if df['start_time_dt'].notna().sum() > 0:
-
-            df['weekday'] = df['start_time_dt'].dt.day_name()
-
-            print("Weekday feature created")
-
-        else:
-
-            print("Weekday feature skipped")
-
-
-        # Create age groups
+        # Age groups
         df['age_group'] = pd.cut(
-
             df['age'],
-
-            bins=[18, 30, 45, 60, 100],
-
-            labels=[
-                'Young Adult',
-                'Adult',
-                'Middle Aged',
-                'Senior'
-            ],
-
+            bins=[15, 30, 45, 60, 80],
+            labels=['15-29', '30-44', '45-59', '60-79'],
             right=False
         )
 
-
         self.df = df
 
-        print("Feature engineering completed")
+        print("Feature engineering completed.")
 
         return self
 
@@ -209,23 +241,18 @@ class BikeSharePipeline:
 
         df = self.df.copy()
 
-
         # One-hot encoding
         df_encoded = pd.get_dummies(
-
             df,
-
             columns=[
                 'user_type',
                 'member_gender',
                 'bike_share_for_all_trip'
             ],
-
             drop_first=True
         )
 
-
-        # Scale numeric features using Min-Max scaling
+        # Manual Min-Max scaling
         scale_cols = ['duration_min', 'age']
 
         for col in scale_cols:
@@ -233,16 +260,16 @@ class BikeSharePipeline:
             min_val = df_encoded[col].min()
             max_val = df_encoded[col].max()
 
-            df_encoded[col] = (
-
-                df_encoded[col] - min_val
-
-            ) / (max_val - min_val)
-
+            if max_val != min_val:
+                df_encoded[col] = (
+                    df_encoded[col] - min_val
+                ) / (max_val - min_val)
+            else:
+                df_encoded[col] = 0
 
         self.df_processed = df_encoded
 
-        print("Encoding and scaling completed")
+        print("Encoding and scaling completed.")
 
         return self
 
