@@ -197,29 +197,37 @@ class BikeSharePipeline:
 
     def engineer_features(self):
         """
-        Create new useful features.
+        Create new useful features for analysis and plotting.
+
+        Features created:
+        - duration_min → trip duration in minutes
+        - start_time_dt → proper datetime format
+        - hour → hour of trip (for hourly plots)
+        - weekend_flag → 1 if weekend, 0 if weekday
+        - age_group → grouped age ranges
         """
 
         df = self.df.copy()
 
-        # Duration in minutes
+        # Convert duration to minutes (easier to understand than seconds)
         df['duration_min'] = df['duration_sec'] / 60
 
-        # Reconstruct datetime
+        # Create proper datetime column
         df['start_time_dt'] = self._reconstruct_datetime(df)
 
-        if df['start_time_dt'].isna().sum() == len(df):
-            raise ValueError("Failed to create datetime feature.")
+        # Safety check
+        if df['start_time_dt'].isna().all():
+            raise ValueError("Datetime feature creation failed.")
 
-        # Weekday name
-        df['weekday'] = df['start_time_dt'].dt.day_name()
+        # Extract hour (IMPORTANT for trips by hour plot)
+        df['hour'] = df['start_time_dt'].dt.hour
 
-        # Weekday flag
-        df['weekday_flag'] = df['start_time_dt'].dt.dayofweek.apply(
-            lambda x: 1 if x < 5 else 0
+        # Weekend flag (useful for comparison plots)
+        df['weekend_flag'] = df['start_time_dt'].dt.dayofweek.apply(
+            lambda x: 1 if x >= 5 else 0
         )
 
-        # Age groups
+        # Age groups (clear ranges)
         df['age_group'] = pd.cut(
             df['age'],
             bins=[15, 30, 45, 60, 80],
@@ -230,6 +238,7 @@ class BikeSharePipeline:
         self.df = df
 
         print("Feature engineering completed.")
+        print("New columns added: duration_min, start_time_dt, hour, weekend_flag, age_group")
 
         return self
 
