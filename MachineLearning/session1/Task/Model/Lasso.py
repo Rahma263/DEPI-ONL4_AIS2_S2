@@ -1,4 +1,5 @@
 import numpy as np
+from Model.BaseLinear import BaseLinearModel
 
 """
 This class implements Lasso Regression using Gradient Descent.
@@ -14,7 +15,7 @@ The objective function minimized is:
 
 Loss = Sum of Squared Errors (SSE) + lambda * |w|
 """
-class LassoRegression_Rahma(BaseLinearModel_Rahma):
+class LassoRegression(BaseLinearModel):
     
     def fit(self, X, y):
         """
@@ -37,27 +38,17 @@ class LassoRegression_Rahma(BaseLinearModel_Rahma):
        
         n = len(X)
         
-        
-        for i in range(self.iterations):
-            
+        for i in range(self.iteration):
             
             y_hat = self.predict(X)
             
-            
-            
-            D_w = (2/n) * np.sum((y_hat - y) * X) + self.lambda_ * np.sign(self.w)
-            
-            
+            D_w = (2/n) * np.sum((y_hat - y) * X) + self.lambda_ * np.sign(self.w)   #We use `np.sign(self.w)` because it represents the derivative of the L1 regularization term ( |w| ), which pushes weights toward zero during gradient descent.
+
             D_b = (2/n) * np.sum(y_hat - y)
-            
-            
             
             self.w -= self.alpha * D_w
             self.b -= self.alpha * D_b
             
-            
-            
             loss = np.sum((y_hat - y)**2) + self.lambda_ * np.abs(self.w)
-            
-    
+        
             self.loss_history.append(loss)
