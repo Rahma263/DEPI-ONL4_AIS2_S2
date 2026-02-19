@@ -34,17 +34,13 @@ class BaseLinearModel:
         """
         
         self.alpha = alpha
-        
-        
+    
         self.iteration = iteration
-        
         
         self.lambda_ = lambda_
         
-        
         self.w = 0
         self.b = 0
-        
         
         self.loss_history = []
         

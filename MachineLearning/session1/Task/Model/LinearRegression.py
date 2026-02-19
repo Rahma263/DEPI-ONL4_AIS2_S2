@@ -5,9 +5,9 @@ It inherits from BaseLinearModel and learns the best line by minimizing SSE.
 
 import numpy as np
 import matplotlib.pyplot as plt
+from Model.BaseLinear import BaseLinearModel
 
-
-class LinearRegression_Rahma(BaseLinearModel):
+class LinearRegression_r(BaseLinearModel):
     """
     Linear Regression model using Gradient Descent.
 
@@ -35,7 +35,7 @@ class LinearRegression_Rahma(BaseLinearModel):
         self.sse_values = []
 
 
-    def fit_rahma(self, X, y):
+    def fit_r(self, X, y):
         """
         Train Linear Regression using Gradient Descent.
 

@@ -1,4 +1,5 @@
 import numpy as np
+from Model.LinearRegression import LinearRegression_r
 
 """
 This class implements Polynomial Regression using Gradient Descent.
@@ -7,15 +8,10 @@ Polynomial Regression is an extension of Linear Regression that allows
 the model to learn non-linear relationships between input (X) and output (y)
 by transforming the original feature into higher-degree polynomial features.
 
-Example:
-If degree = 3 and X = [x],
-the transformed features become:
-[x, x², x³]
-
 This allows the model to fit curves instead of just straight lines.
 """
 
-class PolynomialRegression_Rahma(LinearRegression_Rahma):
+class PolynomialRegression(LinearRegression_r):
     
     def __init__(self, degree=2, alpha=0.01, iterations=100):
         """
@@ -65,7 +61,7 @@ class PolynomialRegression_Rahma(LinearRegression_Rahma):
         for d in range(2, self.degree + 1):
             
             
-            X_poly = np.column_stack((X_poly, X**d))
+            X_poly = np.column_stack((X_poly, X**d))   # Add a new column with X raised to power d.
             
         return X_poly
     
@@ -89,45 +85,25 @@ class PolynomialRegression_Rahma(LinearRegression_Rahma):
             :y_parameter:True target values
         """
         
-        # Step 1: Transform input into polynomial feature matrix
         X_poly = self.transform(X)
-        
-        
-        
+    
         self.w = np.zeros(X_poly.shape[1])
-        
         
         self.b = 0
         
-        
-        
         n = len(X)
         
-        
-        
-        for i in range(self.iterations):
-            
+        for i in range(self.iteration):
             
             y_hat = np.dot(X_poly, self.w) + self.b
             
-            
-            
-            
-            
             D_w = (2/n) * np.dot(X_poly.T, (y_hat - y))
-            
             
             D_b = (2/n) * np.sum(y_hat - y)
             
-            
-           
             self.w -= self.alpha * D_w
             self.b -= self.alpha * D_b
             
-            
-            
             loss = np.sum((y_hat - y)**2)
-            
-            
             
             self.loss_history.append(loss)
