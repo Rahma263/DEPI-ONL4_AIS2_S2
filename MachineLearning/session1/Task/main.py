@@ -1,5 +1,5 @@
 import numpy as np
-from LinearRegression_R import LinearRegression_Rahma
+from LinearRegression import LinearRegression
 
 x = np.array([1, 2, 3, 4, 5, 6, 7, 8])
 y = np.array([3, 5, 7, 9, 11, 13, 15, 17])
