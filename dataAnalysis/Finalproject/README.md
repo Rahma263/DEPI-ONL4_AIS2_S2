@@ -64,8 +64,7 @@ README.md
 - NumPy
 - Seaborn
 - Matplotlib
-- Jupyter Notebook
 
 ## How to Run
 
-Open notebook:
+Open eda.py:
