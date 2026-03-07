@@ -1,11 +1,3 @@
-Transaction_ID,Product_Category,Sales_Amount,Customer_Age,Rating
-1,Electronics,150,25.0,5
-2,Home,200,34.0,4
-3,Electronics,155,,3
-4,Sports,300,45.0,5
-5,Home,210,23.0,2
-6,Electronics,180,31.0,4
-7,Home,205,29.0,5
-8,Sports,1000,,2
-9,Electronics,190,38.0,4
-10,Electronics,160,40.0,3
+version https://git-lfs.github.com/spec/v1
+oid sha256:bbd1cf236cb403f7988853cbd9c578b98322ef4fc7e6b361123217f0c5629c1c
+size 289
