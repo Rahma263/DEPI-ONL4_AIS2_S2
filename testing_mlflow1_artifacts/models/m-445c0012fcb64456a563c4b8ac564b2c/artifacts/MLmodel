@@ -1,0 +1,36 @@
+artifact_path: file:C:/Users/Test/Desktop/DEPI-ONL4_AIS2_S2/testing_mlflow1_artifacts/models/m-445c0012fcb64456a563c4b8ac564b2c/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.9
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.10.1
+model_id: m-445c0012fcb64456a563c4b8ac564b2c
+model_size_bytes: 907074
+model_uuid: m-445c0012fcb64456a563c4b8ac564b2c
+prompts: null
+run_id: 609d50f0dc8545dc835bf56aec144a94
+signature:
+  inputs: '[{"type": "double", "name": "feature_0", "required": true}, {"type": "double",
+    "name": "feature_1", "required": true}, {"type": "double", "name": "feature_2",
+    "required": true}, {"type": "double", "name": "feature_3", "required": true},
+    {"type": "double", "name": "feature_4", "required": true}, {"type": "double",
+    "name": "feature_5", "required": true}, {"type": "double", "name": "feature_6",
+    "required": true}, {"type": "double", "name": "feature_7", "required": true},
+    {"type": "double", "name": "feature_8", "required": true}, {"type": "double",
+    "name": "feature_9", "required": true}]'
+  outputs: '[{"type": "long", "name": "prediction", "required": true}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-03-19 09:58:01.368869'

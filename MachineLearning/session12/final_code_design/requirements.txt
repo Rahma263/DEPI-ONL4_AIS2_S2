@@ -1,0 +1,12 @@
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.5.2
+imbalanced-learn==0.12.3
+matplotlib==3.9.2
+seaborn==0.13.2
+mlflow==2.17.1
+joblib==1.4.2
+shap==0.46.0
+
+
+# mlflow ui --backend-store-uri file:///D:/InnovionRay_team/Innovisionray_team/InnoVisionRay/Amit/AI_Diploma/Data_Science/Machine%20Learning/MachineLearning/MLops/MLFlow/MLFlowProject/MLFlowProject/P1/outputs/mlruns

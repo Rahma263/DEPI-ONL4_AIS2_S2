@@ -1,0 +1,11 @@
+Age
+CreditScore
+Balance
+EstimatedSalary
+Gender_Male
+Geography_Germany
+Geography_Spain
+IsActiveMember
+HasCrCard
+NumOfProducts
+Tenure
